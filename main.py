@@ -100,8 +100,8 @@ def renameFiles(ID):
                 os.rename(filename, (shot_time + ID + ".CR2"))
                 print ("renamed the CR2")
 
-def push_image(ID):
-    file = save_location + "/" + shot_time + ID + ".JPG"
+def push_image():
+    file = save_location + "/" + shot_time + picID + ".JPG"
     files = {"media": open(file, 'rb')}
     requests.post(api_url, files=files)
 
@@ -111,7 +111,7 @@ def captureImage():
     createSaveFolder()
     captureImages()
     renameFiles(picID)
-    push_image(picID)
+    push_image()
 
 
 if __name__ == '__main__':
