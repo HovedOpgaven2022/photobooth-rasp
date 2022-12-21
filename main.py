@@ -90,6 +90,7 @@ def captureImages():
     gp(downloadCommand)
     
 def renameFiles(ID):
+    shot_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for filename in os.listdir("."):
         if len (filename) < 13:
             if filename.endswith(".JPG"):
