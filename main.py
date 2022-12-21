@@ -1,5 +1,6 @@
 import pygame, sys
 import pygame.camera
+import requests
 from pygame.locals import *
 from time import sleep
 from datetime import datetime
@@ -12,6 +13,9 @@ pygame.display.set_caption('PhotoMaster')
 monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h]
 
 screen = pygame.display.set_mode((monitor_size), pygame.FULLSCREEN)
+
+# setting up api for pushing images
+api_url = "https://api.cloudinary.com/v1_1/disswjmhm/image/upload"
 
 # init pygame camera module
 pygame.camera.init()
@@ -57,7 +61,7 @@ def mainMenu():
                     if event.key == K_ESCAPE:
                         running = False
                     if event.key == K_k:
-                            captureImage()
+                        captureImage()
                           
                 
          
@@ -95,12 +99,18 @@ def renameFiles(ID):
                 os.rename(filename, (shot_time + ID + ".CR2"))
                 print ("renamed the CR2")
 
+def push_image(ID):
+    file = save_location + "/" + shot_time + ID + ".JPG"
+    files = {"media": open(file, 'rb')}
+    requests.post(api_url, files=files)
+
 def captureImage():
     killgphoto2process()
     gp(clearCommand)
     createSaveFolder()
     captureImages()
     renameFiles(picID)
+    push_image(picID)
 
 
 if __name__ == '__main__':
