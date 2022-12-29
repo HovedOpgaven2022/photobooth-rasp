@@ -1,3 +1,5 @@
+import json
+
 import pygame, sys
 import pygame.camera
 import requests
@@ -15,7 +17,8 @@ monitor_size = [pygame.display.Info().current_w, pygame.display.Info().current_h
 screen = pygame.display.set_mode((monitor_size), pygame.FULLSCREEN)
 
 # setting up api for pushing images
-api_url = "https://api.cloudinary.com/v1_1/disswjmhm/image/upload"
+cloudinary_url = "https://api.cloudinary.com/v1_1/disswjmhm/image/upload"
+api_url = "http://185.51.76.204:8090/api/"
 
 # init pygame camera module
 pygame.camera.init()
@@ -100,10 +103,20 @@ def renameFiles(ID):
                 os.rename(filename, (shot_time + ID + ".CR2"))
                 print ("renamed the CR2")
 
+def push_image_to_db(image_url):
+    api = api_url + "Photo/UploadPhoto"
+    headers = {"Content-Type": "application/json"}
+    res = requests.post(api, json={"url": str(image_url)}, headers=headers)
+
 def push_image():
     file = save_location + "/" + shot_time + picID + ".JPG"
-    files = {"media": open(file, 'rb')}
-    requests.post(api_url, files=files)
+    data = {"upload_preset":"photobooth"}
+    files = {"file": open(file, "rb")}
+    response = requests.post(cloudinary_url, data=data, files=files).text
+    response = json.loads(response)
+
+    image_url = response["url"]
+    push_image_to_db(image_url)
 
 def captureImage():
     killgphoto2process()
